@@ -1,0 +1,203 @@
+﻿@using ShoppingCart.Models;
+@using System.Linq;
+@{
+    var PurchaseList = (List<Purchase>)ViewData["PurchaseList"];
+    var PurchasedItems = (Dictionary<Purchase, List<PurchasedItem>>)ViewData["PurchasedItems"];
+    var ItemList = (List<Item>)ViewData["ItemList"];
+    ViewData["Title"] = "My Purchase";
+    var ReviewDictionary = (Dictionary<Guid, Review>)ViewData["ReviewDictionary"];
+}
+
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+    $(function () {
+        $("[data-toggle='popover']").popover();
+    });
+    function downloadclick() {
+        alert("Thanks for downloading! ^^")
+    }
+</script>
+
+<style>
+    p {
+        font-weight: normal;
+        font-size: 14px;
+    }
+
+    option {
+        text-size-adjust: auto;
+    }
+
+    .my_purchaselist {
+        text-align: center;
+        border: 1px solid #000000;
+        padding: 5px;
+        background-color: whitesmoke;
+        display: inline-block;
+        width: 300px;
+        margin-left: 50px;
+        height: fit-content;
+        float: left;
+        margin-bottom: 10px;
+    }
+
+    .outerspace {
+        width: 50%;
+    }
+
+    .my_purchasedinfo {
+        text-align: left;
+        float: right;
+        margin-left: 10%;
+        padding: 1%;
+        width: 50%;
+        margin-top: 10%;
+    }
+
+    .row {
+        width: 80%;
+    }
+
+    a.disabled {
+        color: darkgray;
+        pointer-events: none;
+        filter: opacity(50);
+    }
+ .purchase-successful {
+     width: 80%;
+     background-color: "#a9e9f6";
+     color: white;
+     border-color: "#a9d9ff";
+     border: 1px;
+     height: 10%;
+     text-align: center;
+     float: top;
+ }
+</style>
+<body style="position:relative;">
+    @if (PurchaseList.Count() > 0)
+    {
+        @foreach (Purchase purchase in PurchaseList)
+        {
+            string purchaseDate = purchase.PurchaseDate.ToString("dd MMM yyyy");
+            var purchasedList = PurchasedItems.GetValueOrDefault(purchase);
+            @foreach (Guid ItemId in purchasedList.Select(x => x.ItemId).Distinct())
+            {
+                var item = ItemList.FirstOrDefault(x => x.Id == ItemId);
+                var imgURL = item.ImageUrl;
+                var Name = item.Name;
+                var Description = item.Description;
+                var Quantity = purchasedList.Count(x => x.ItemId == ItemId);
+                <div class="row">
+                    <div class="my_purchaselist">
+                        <img src="@imgURL" width="200" height="200" /><br />
+                        <h3>@Name</h3>
+                        <p>@Description</p>
+                        <button type="button" class="btn btn-warning"
+                                data-container="body" onclick="downloadclick()" data-toggle="popover" data-placement="right"
+                                data-content="Thanks for downloading!">
+                            Download
+                        </button>
+                    </div>
+                    <div class="my_purchasedinfo">
+                        <ul class="list-group">
+                            <li class="list-group-item">Purchased On:   @purchaseDate</li>
+                            <li class="list-group-item">Quantity:   @Quantity</li>
+                        </ul>
+                        <p style="color:orangered;font-weight:100">
+                            Activation Code:
+                            @if (Quantity > 1)
+                            {
+                                <select>
+                                    @foreach (var key in purchasedList.Where(x => x.ItemId == ItemId).Select(x => x.ActivationKey))
+                                    {
+                                        <option value="@key">@key</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                @purchasedList.FirstOrDefault(x => x.ItemId == ItemId).ActivationKey
+                            }
+                        </p>
+
+                        @{
+                            Review review = ReviewDictionary[ItemId];
+                            if (review == null)
+                            {
+                                <p>
+                                    <a href="/Review/Index?itemId=@ItemId&purchaseId=@purchase.Id"> Write Your Review </a>
+                                </p>
+                            }
+                            else
+                            {
+                                <p>
+                                    <a href="/Review/Index?itemId=@ItemId&purchaseId=@purchase.Id" class="disabled"> Write Your Review </a>
+                                </p>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        }
+
+    }
+    else
+    {
+        <div class="well well-lg">There are currently no items you've purchased ~ </div>
+        <div class="ibox-content">
+            <form id="continue" action="/Gallery/AllProducts" method="POST">
+                <i class="fa fa-arrow-left"></i> <input type="submit" value="Start Shopping" class="btn btn-white" />
+            </form>
+        </div>
+    }
+
+    @*@if (query.Count() > 0)
+        {
+            @foreach (dynamic obj in query)
+            {
+                @obj
+                string purchaseDate = obj.PurchaseDate.ToShortDateString();
+                    <div class="row" style="width:1110px ;margin-left:1px">
+                    @foreach (Guid id in ((IEnumerable<dynamic>)obj).Select(x => x.itemID).Distinct().ToList())
+                    {
+                        var item = ((IEnumerable<dynamic>)obj).Where(x => x.itemID == id).ToList();
+                        var imgURL = item.FirstOrDefault().ImageURL;
+                        var Name = item.FirstOrDefault().Name;
+                        var Description = item.FirstOrDefault().Description;
+                        var Quantity = item.Count();
+                        <div class="outerspace">
+                            <div class="my_purchaselist">
+                                <img src="@imgURL" width="200" height="120" />
+                            </div>
+                            <h3>@Name</h3>
+                            <p>@Description</p>
+                            <input type="button" value="Download" />
+                        </div>
+                        // if there are multiple activation codes, display combo box
+                        // otherwise, plain old text
+                        <div class="my_purchasedinfo">
+                            <p>Purchased On: @purchaseDate</p>
+                            <p>Quantity: @Quantity</p>
+                            <p>Activation Code:
+                            @if (Quantity > 1)
+                            {
+                                <select>
+                                    @foreach (var key in ((IEnumerable<dynamic>)item).Select(x => x.ActivationKey))
+                                    {
+                                        <option value="@key">@key</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                @item.Select(x => x.ActivationKey).ToString()
+                            }
+                            </p>
+                        </div>
+                    }
+                    </div>
+                }
+            }*@
+</body>

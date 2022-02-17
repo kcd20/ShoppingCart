@@ -1,0 +1,11 @@
+﻿.carousel-inner {
+    height: 230px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+p {
+    font-weight: bold;
+    font-size: 18px;
+}

@@ -1,0 +1,87 @@
+﻿@{
+    List<ShoppingCart.Models.Review> reviews =
+        (List<ShoppingCart.Models.Review>)ViewData["reviews"];
+}
+
+<style>
+    .Row1 {
+        font-family: Calibri;
+        font-size: 20px;
+        height: 40px;
+        background-color: #d4cece;
+    }
+
+    .Row2 {
+        font-family: Calibri;
+        padding: 10px 10px;
+        font-size: 18px;
+        height: 20px;
+    }
+</style>
+
+@if (reviews.Count == 0)
+{
+
+    <table>
+
+        <tr class="Row1">
+            <th width=15%>Review History</th>
+            <th width=10%>Score</th>
+            <th width=35%>Content</th>
+            <th width=10%>Review Date</th>
+            <th width=10%>UserId</th>
+        </tr>
+    </table>
+    <div class="Row2"> Sorry. There's no review yet.</div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+
+}
+else
+{
+    <table>
+        <tr class="Row1">
+            <th width=15%>Review History</th>
+            <th width=10%>Score</th>
+            <th width=30%>Content</th>
+            <th width=15%>Review Date</th>
+            <th width=10%>UserId</th>
+        </tr>
+
+        @{
+            int row = 1;
+
+            foreach (ShoppingCart.Models.Review review in reviews)
+            {
+                string row_color = (row % 2 == 0) ? "class=even_row" : "";
+
+                <tr @row_color>
+                    <td style="text-align:left">@review.ItemId</td>
+                    <td style="text-align:left">@review.Score</td>
+                    <td style="text-align:left">@review.ReviewContent</td>
+                    <td style="text-align:left">@review.ReviewDate</td>
+                    <td style="text-align:left"> @Context.Request.Cookies["Username"]</td>
+                </tr>
+                row += 1;
+            }
+        }
+    </table>
+}
+@*<table width="100%" border="3" cellspacing="0">
+        <tr height="50">
+            <td colspan="3"> Review History </td>
+        </tr>
+
+        <tr height="50">
+            <td width=20%> Item </td>
+            <td width=20%> PurchaseDate </td>
+            <td width=40%> ReviewContent </td>
+            <td width=20%> UserId </td>
+        </tr>
+
+        <tr height="50">
+            <td colspan="3"> Footer Section </td>
+        </tr>
+    </table>*@

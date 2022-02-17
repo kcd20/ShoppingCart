@@ -1,0 +1,41 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<style>
+    .container{
+        background:#d4cece;
+    }
+    .Review {
+        display: flex;
+        flex-direction: row;
+        padding: 20px 0px 20px 0px;
+    }
+    .col-10{
+        display:flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        width: 80%;
+        height: 100%
+    }
+    .flex-lg-column-4 {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        /*width: 20%;*/
+        /*position:fixed;*/
+        align-items: flex-end;
+    }
+
+</style>
+
+<div class="Review">
+    <div class="flex-lg-column-1">
+        <p>Thanks for your review!</p>
+        <p>Have a nice day!</p>
+    </div>
+    <div class="flex-lg-column-4">
+        <a href="/Purchases/MyPurchases">Back To MyPurchase</a>
+    </div>
+</div>

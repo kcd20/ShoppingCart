@@ -1,0 +1,237 @@
+@{
+    ViewData["Title"] = "View Cart Page";
+    Cart cart = (Cart)ViewData["cart"];
+    DBContext db = (DBContext)ViewData["DataBase"];
+}
+
+@section Scripts{
+    <script type="text/javascript">
+
+        /* window.onload = function () {
+             let num = document.getElementById("hidden").innerHTML;
+             for (let i = 0; i < num; i++) {
+                 let elem_add = document.getElementById("add_" + i);
+                 let elem_minus = document.getElementById("minus_" + i);
+                 //handle Add case when clicked
+                 elem_add.onclick = function () {
+                     let name = document.getElementById("name_" + i).innerHTML;
+                     let xhr = new XMLHttpRequest();
+                     xhr.open("POST", "/Cart/AdjustNum");
+                     xhr.setRequestHeader("Content-Type", "application/json; Charser=utf8");
+                     xhr.onreadystatechange = function () {
+                         if (this.readyState == XMLHttpRequest.DONE) {
+                             if (this.status != 200)
+                                 return;
+                             let data = JSON.parse(this.responseText);
+                             if (data.toADD == true) {
+                                 let NUM = document.getElementById("num_" + i);
+                                 NUM.innerHTML = parseInt(parseInt(NUM.innerHTML) + 1);
+                                 let elem_price = document.getElementById("TotalPrice");
+                                 elem_price.innerHTML=data.
+                             }
+
+                         }
+                     }
+                     let data = {
+                         "name": name,
+                         "flag": 1
+                     };
+                     xhr.send(JSON.stringify(data));
+                 }
+                 //handle Minus case when clicked
+                 elem_minus.onclick = function () {
+                     let name = document.getElementById("name_" + i).innerHTML;
+                     let xhr = new XMLHttpRequest();
+                     xhr.open("POST", "/Cart/AdjustNum");
+                     xhr.setRequestHeader("Content-Type", "application/json; Charser=utf8");
+                     xhr.onreadystatechange = function () {
+                         if (this.readyState == XMLHttpRequest.DONE) {
+                             if (this.status != 200)
+                                 return;
+                             let data = JSON.parse(this.responseText);
+                             if (data.toADD == true) {
+                                 let NUM = document.getElementById("num_" + i);
+                                 NUM.innerHTML = parseInt(parseInt(NUM.innerHTML) + 1);
+                             }
+                         }
+                     }
+                     let data = {
+                         "name": name,
+                         "flag": 0
+                     };
+                     xhr.send(JSON.stringify(data));
+                 }
+             }
+         }
+         */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //Edits
+    </script>
+}
+<script src="~/js/Gallery/Recommendation.js"></script>
+
+<link rel="stylesheet" href="~/css/Cart.css" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <span class="pull-right"> <spane id="hidden">@cart.CartItemCategories.Count </spane>items</span>
+                        <i class="fa fa-shopping-cart"></i><h5>Items in your cart</h5>
+                    </div>
+
+                    @{ int j = 0;
+                        foreach (CartItemCategory ctgy in cart.CartItemCategories)
+                        {
+                            Item item = ctgy.Item;
+
+                            <div class="ibox-content">
+                                <div class="table-responsive">
+                                    <table class="table shoping-cart-table">
+                                        <tbody>
+                                            <tr>
+                                                <td width="90">
+                                                    <img src="@item.ImageUrl" width="200" height="120" />
+                                                </td>
+                                                <td class="desc">
+
+                                                    <h3 id="name_@j" style="color:darkblue">@item.Name</h3>
+                                                    <dl class="small m-b-none">
+                                                        <dt>Description:</dt>
+                                                        <dd>@item.Description</dd>
+                                                    </dl>
+                                                </td>
+
+                                                <td>
+                                                    Qty:
+                                                </td>
+                                                <td width="65">
+                                                    <input type="text" class="form-control" readonly="readonly" placeholder="@ctgy.NumberOfItem" style="text-align:center">
+                                                </td>
+
+                                                <td>
+                                                    <h5 id="SinglePrice_@j">$@item.Price</h5>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div style="margin-left:645px;margin-top:-80px">
+                                        <form action="/Cart/AdjustNum" method="post">
+                                            <input style="display:none" type="text" name="bookname" value="@item.Name" />
+                                            <input style="display:none" type="number" name="quantity" value="@ctgy.NumberOfItem" />
+                                            <input style="display:none" type="number" name="flag" value="1" />
+                                            <input type="submit" value="ADD" class="btn btn-success" />
+                                        </form>
+                                        <br />
+                                        <form action="/Cart/AdjustNum" method="post">
+                                            <input style="display:none" type="text" name="bookname" value="@item.Name" />
+                                            <input style="display:none" type="number" name="quantity" value="@ctgy.NumberOfItem" />
+                                            <input style="display:none" type="number" name="flag" value="0" />
+                                            <input type="submit" value="MINUS" class="btn btn-danger" />
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            j++;
+                        }
+                    }
+
+                    @if (cart.CartItemCategories == null || cart.CartItemCategories.Count == 0)
+                    {
+                        <img src="~/images/your-cart-is-empty.png" style="width:825px" />
+                    }
+
+                    <div class="ibox-content">
+                        <form id="continue" action="/Gallery/AllProducts" method="POST">
+                            <i class="fa fa-arrow-left"></i> <input type="submit" value="Continue Shopping" class="btn btn-white" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>Cart Summary</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <span>
+                            Total
+                        </span>
+                        <h2 id="TotalPrice" class="font-bold">$@ViewData["price"]</h2>
+
+                        <hr>
+                        <span class="text-muted small">
+                            Click "Checkout" to start the first step of your .NET journey!
+                        </span>
+                        <div class="m-t-sm">
+                            <div class="btn-group">
+
+                                <form id="checkout" action="/Cart/CheckOut" method="POST">
+                                    <input type="submit" value="Checkout" class="btn btn-primary btn-sm" />    <i class="fa fa-shopping-cart"></i>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <p class="font-bold">
+                            The products you may be interested:
+                        </p>
+                        <hr>
+                        @{
+                            List<string> category = new List<string>();
+                            List<string> name = new List<string>();
+                            List<Item> items = db.Items.ToList();
+                            foreach (CartItemCategory ctgy in cart.CartItemCategories)
+                            {
+                                // Item item = ctgy.Item;
+
+                                category.Add(ctgy.Item.Category);
+                                name.Add(ctgy.Item.Name);
+                            }
+
+                            Recommendation recommendation = new Recommendation(db);
+
+                            List<string> afterRemovedCategory = recommendation.RemoveDupliCateogy(category);
+                            List<Item> searchItems = recommendation.SearchItems(afterRemovedCategory);
+                            List<Item> result = recommendation.GenerateRecommendations(searchItems, name, items);
+
+                            Random random = new Random();
+
+                            List<int> listNum = new List<int>();
+
+                            for (int i = 0; i < 3; i++)
+                            {
+                                var num = random.Next(0, result.Count);
+
+                                if (listNum.Contains(num))
+                                {
+                                    i = i - 1;
+                                    continue;
+                                }
+
+                                <div>
+                                    <a class="product-name" style="color:darkblue"> @result[num].Name</a>
+                                    <div class="small m-t-xs">
+                                        @result[num].Description
+                                    </div>
+                                    <img src="@result[num].ImageUrl" style="height:100px;width:200px" />
+
+                                    <button type="button" id="@result[num].Id" class="btn btn-warning add-to-cart2" style="margin-left:30px">$@result[num].Price - Add to Cart </button>
+                                </div>
+                                <hr>
+                                listNum.Add(num);
+
+                            }
+
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
